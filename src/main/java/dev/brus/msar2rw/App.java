@@ -30,12 +30,6 @@ import com.google.gson.JsonParser;
  */
 public class App {
 
-   private static final String ACTIVITY_OPENING_VALUE = "Opening Value";
-   private static final String ACTIVITY_YOU_BOUGHT = "You bought";
-   private static final String ACTIVITY_RELEASE = "Release";
-   private static final String ACTIVITY_SALE = "Sale";
-   private static final String CLOSING_VALUE = "Closing Value";
-
    public static void main(String[] args) throws Exception {
       System.out.println("Hello World!");
 
@@ -58,19 +52,19 @@ public class App {
             Date entryDate = parser.parse(fields[0]);
             BigDecimal shares = BigDecimal.ZERO;
             BigDecimal price = BigDecimal.ZERO;
-            if (fields[1].equals(ACTIVITY_OPENING_VALUE) || fields[1].equals(ACTIVITY_YOU_BOUGHT) || fields[1].equals(ACTIVITY_SALE)) {
+            if (fields[1].equals(ActivityEntry.ACTIVITY_OPENING_VALUE) || fields[1].equals(ActivityEntry.ACTIVITY_YOU_BOUGHT) || fields[1].equals(ActivityEntry.ACTIVITY_SALE)) {
                shares = new BigDecimal(fields[4]);
                price = (BigDecimal)usDecimalFormat.parse(fields[5]);
-            } else if (fields[1].startsWith(ACTIVITY_RELEASE)) {
+            } else if (fields[1].startsWith(ActivityEntry.ACTIVITY_RELEASE)) {
                shares = new BigDecimal(fields[4]);
                price = ((BigDecimal)usDecimalFormat.parse(fields[6])).divide(shares, RoundingMode.CEILING);
-            } else if (fields[1].equals(CLOSING_VALUE)) {
+            } else if (fields[1].equals(ActivityEntry.CLOSING_VALUE)) {
                closingValue = (BigDecimal) usDecimalFormat.parse(fields[5]);
                closingDate = entryDate;
             }
 
             if (shares != BigDecimal.ZERO) {
-               activityEntries.add(new ActivityEntry().setDate(entryDate).setShares(shares).setPrice(price));
+               activityEntries.add(new ActivityEntry().setType(fields[1]).setDate(entryDate).setShares(shares).setPrice(price));
             }
 
             line = reader.readLine();
