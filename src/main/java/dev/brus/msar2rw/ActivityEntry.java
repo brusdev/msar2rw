@@ -10,7 +10,7 @@ public class ActivityEntry {
    public static final String ACTIVITY_YOU_BOUGHT = "You bought";
    public static final String ACTIVITY_RELEASE = "Release";
    public static final String ACTIVITY_SALE = "Sale";
-   public static final String CLOSING_VALUE = "Closing Value";
+   public static final String ACTIVITY_CLOSING_VALUE = "Closing Value";
 
    public String type;
    Date date;

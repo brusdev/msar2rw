@@ -58,7 +58,7 @@ public class App {
             } else if (fields[1].startsWith(ActivityEntry.ACTIVITY_RELEASE)) {
                shares = new BigDecimal(fields[4]);
                price = ((BigDecimal)usDecimalFormat.parse(fields[6])).divide(shares, RoundingMode.CEILING);
-            } else if (fields[1].equals(ActivityEntry.CLOSING_VALUE)) {
+            } else if (fields[1].equals(ActivityEntry.ACTIVITY_CLOSING_VALUE)) {
                closingValue = (BigDecimal) usDecimalFormat.parse(fields[5]);
                closingDate = entryDate;
             }
