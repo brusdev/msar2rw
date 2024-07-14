@@ -5,9 +5,26 @@ import java.text.DateFormat;
 import java.util.Date;
 
 public class ActivityEntry {
+
+   public static final String ACTIVITY_OPENING_VALUE = "Opening Value";
+   public static final String ACTIVITY_YOU_BOUGHT = "You bought";
+   public static final String ACTIVITY_RELEASE = "Release";
+   public static final String ACTIVITY_SALE = "Sale";
+   public static final String ACTIVITY_CLOSING_VALUE = "Closing Value";
+
+   public String type;
    Date date;
    BigDecimal shares;
    BigDecimal price;
+
+   public String getType() {
+      return type;
+   }
+
+   public ActivityEntry setType(String type) {
+      this.type = type;
+      return this;
+   }
 
    public Date getDate() {
       return date;
@@ -38,6 +55,6 @@ public class ActivityEntry {
 
    @Override
    public String toString() {
-      return String.format("%s %.3f %.2f", DateFormat.getDateInstance().format(date), shares, price);
+      return String.format("%s %s %.3f %.2f", DateFormat.getDateInstance().format(date), type, shares, price);
    }
 }
