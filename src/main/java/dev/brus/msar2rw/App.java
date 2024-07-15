@@ -31,8 +31,6 @@ import com.google.gson.JsonParser;
 public class App {
 
    public static void main(String[] args) throws Exception {
-      System.out.println("Hello World!");
-
       Date closingDate = null;
       BigDecimal closingValue = BigDecimal.ZERO;
       List<ActivityEntry> activityEntries = new ArrayList<>();
@@ -110,7 +108,7 @@ public class App {
          try (PrintWriter rwReportPrintWriter = new PrintWriter(rwReportFile)) {
             rwReportPrintWriter.println(getRWHeader());
             for (int i = 0; i < rwReportEntries.size(); i++) {
-               rwReportPrintWriter.println(convertToRWEntry(i % 5, rwReportEntries.get(i)));
+               rwReportPrintWriter.println(convertToRWEntry(i, rwReportEntries.get(i)));
             }
          }
 
@@ -172,7 +170,7 @@ public class App {
 
 
       //0 - RW index
-      rwEntryFields.add(String.valueOf(index + 1));
+      rwEntryFields.add((index % 5 + 1) + "/" + (index / 5 + 1));
 
       //1 - Codice titolo possesso
       rwEntryFields.add("1"); //1 - proprietà
