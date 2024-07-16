@@ -161,6 +161,12 @@ public class App {
       //29 - IVAFE
       rwEntryFields.add("RW - 29");
 
+      rwEntryFields.add("Azioni");
+
+      rwEntryFields.add("Data inizio");
+
+      rwEntryFields.add("Data fine");
+
       return rwEntryFields.stream().collect(Collectors.joining("\t"));
    }
 
@@ -208,6 +214,14 @@ public class App {
       //29 - IVAFE
       BigDecimal taxValue = endValue.multiply(taxRate).multiply(BigDecimal.valueOf(days)).divide(BigDecimal.valueOf(365), RoundingMode.CEILING).setScale(0, RoundingMode.HALF_UP);
       rwEntryFields.add(taxValue.toString());
+
+      rwEntryFields.add(entry.getShares().toString());
+      
+      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+      rwEntryFields.add(dateFormat.format(entry.getStartDate()));
+
+      rwEntryFields.add(dateFormat.format(entry.getEndDate()));
 
       return rwEntryFields.stream().map(s -> String.format("%7s", s)).collect(Collectors.joining("\t"));
    }
