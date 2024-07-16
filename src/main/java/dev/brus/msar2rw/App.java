@@ -205,7 +205,7 @@ public class App {
       rwEntryFields.add(endValue.toString());
 
       //10 - Giorni IVAFE- IC
-      int days = (int)Math.ceil((entry.getEndDate().getTime() - entry.getStartDate().getTime()) / 86400000d);
+      int days = (int)Math.ceil((entry.getEndDate().getTime() - entry.getStartDate().getTime()) / 86400000d) + 1;
       rwEntryFields.add(String.valueOf(days));
 
       //14 - Codice
