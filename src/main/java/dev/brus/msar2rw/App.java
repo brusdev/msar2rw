@@ -47,44 +47,69 @@ public class App {
             DecimalFormat usDecimalFormat = (DecimalFormat)NumberFormat.getCurrencyInstance(Locale.US);
             usDecimalFormat.setParseBigDecimal(true);
 
+            String type = fields[1];
+            String description = fields[1];
             Date entryDate = parser.parse(fields[0]);
             BigDecimal shares = BigDecimal.ZERO;
             BigDecimal price = BigDecimal.ZERO;
-            if (fields[1].equals(ActivityEntry.ACTIVITY_OPENING_VALUE) || fields[1].equals(ActivityEntry.ACTIVITY_YOU_BOUGHT) || fields[1].equals(ActivityEntry.ACTIVITY_SALE)) {
+            if (description.equals(ActivityEntry.ACTIVITY_OPENING_VALUE) || description.equals(ActivityEntry.ACTIVITY_YOU_BOUGHT) || description.equals(ActivityEntry.ACTIVITY_SALE)) {
                shares = new BigDecimal(fields[4]);
                price = (BigDecimal)usDecimalFormat.parse(fields[5]);
-            } else if (fields[1].startsWith(ActivityEntry.ACTIVITY_RELEASE)) {
+            } else if (description.startsWith(ActivityEntry.ACTIVITY_RELEASE)) {
+               type = ActivityEntry.ACTIVITY_RELEASE;
                shares = new BigDecimal(fields[4]);
                price = ((BigDecimal)usDecimalFormat.parse(fields[6])).divide(shares, RoundingMode.CEILING);
-            } else if (fields[1].equals(ActivityEntry.ACTIVITY_CLOSING_VALUE)) {
+            } else if (description.equals(ActivityEntry.ACTIVITY_CLOSING_VALUE)) {
                closingValue = (BigDecimal) usDecimalFormat.parse(fields[5]);
                closingDate = entryDate;
             }
 
             if (shares != BigDecimal.ZERO) {
-               activityEntries.add(new ActivityEntry().setType(fields[1]).setDate(entryDate).setShares(shares).setPrice(price));
+               activityEntries.add(new ActivityEntry().setType(type).setDescription(description).setDate(entryDate).setShares(shares).setPrice(price));
             }
 
             line = reader.readLine();
          }
 
-         System.out.println("Process activity entries:");
+         System.out.println("Source activity entries:");
+         activityEntries.forEach(activityEntry -> System.out.println(activityEntry));
 
-         List<ReportEntry> rwReportEntries = new ArrayList<>();
+
+         // Aggregate activity entries
+         ActivityEntry aggregatedActivityEntry = null;
+         List<ActivityEntry> aggregatedActivityEntries = new ArrayList<>();
          for (ActivityEntry activityEntry: activityEntries) {
+            if (aggregatedActivityEntry == null ||
+               !aggregatedActivityEntry.getDate().equals(activityEntry.getDate()) ||
+               !aggregatedActivityEntry.getPrice().equals(activityEntry.getPrice()) ||
+               !aggregatedActivityEntry.getType().equals(activityEntry.getType()))
+            {
+               aggregatedActivityEntry = new ActivityEntry().setDate(activityEntry.getDate()).
+                  setPrice(activityEntry.getPrice()).setShares(BigDecimal.ZERO).setType(activityEntry.getType());
+               aggregatedActivityEntries.add(aggregatedActivityEntry);
+            }
+            aggregatedActivityEntry.setShares(aggregatedActivityEntry.getShares().add(activityEntry.getShares()));
+         }
+
+
+         // Decrement aggregated activity entries
+         List<ReportEntry> reportEntries = new ArrayList<>();
+         for (ActivityEntry activityEntry: aggregatedActivityEntries) {
             System.out.println(activityEntry);
             if (activityEntry.getShares().compareTo(BigDecimal.ZERO) < 0) {
-               rwReportEntries.addAll(decrement(activityEntries, activityEntry));
+               reportEntries.addAll(decrement(aggregatedActivityEntries, activityEntry));
             }
          }
 
-         for (ActivityEntry activityEntry: activityEntries) {
+
+         // Add remaining aggregated activity entries
+         for (ActivityEntry activityEntry: aggregatedActivityEntries) {
             System.out.println(activityEntry);
             if (activityEntry.getShares().compareTo(BigDecimal.ZERO) > 0) {
                calendar.setTime(activityEntry.getDate());
                calendar.set(calendar.get(Calendar.YEAR), Calendar.DECEMBER, 31);
 
-               rwReportEntries.add(new ReportEntry().
+               reportEntries.add(new ReportEntry().
                   setStartDate(activityEntry.getDate()).
                   setEndDate(closingDate).
                   setShares(activityEntry.getShares()).
@@ -93,31 +118,30 @@ public class App {
             }
          }
 
-         rwReportEntries.sort(Comparator.comparing(ReportEntry::getStartDate).thenComparing(ReportEntry::getEndDate));
 
-         System.out.println("Print report entries:");
-
-         for (ReportEntry rwReportEntry: rwReportEntries) {
+         // Set exchange rates of report entries
+         for (ReportEntry rwReportEntry: reportEntries) {
             rwReportEntry.setStartExchangeRate(getExchangeRate(rwReportEntry.getStartDate()));
             rwReportEntry.setEndExchangeRate(getExchangeRate(rwReportEntry.getEndDate()));
-            System.out.println(rwReportEntry);
          }
 
 
+         // Sort report entries
+         reportEntries.sort(Comparator.comparing(ReportEntry::getStartDate).thenComparing(ReportEntry::getEndDate));
+
+
+         System.out.println("Report report entries:");
+         reportEntries.forEach(rwReportEntry -> System.out.println(rwReportEntry));
+
+
+         // Write RW report
          File rwReportFile = new File("rw.rpt");
          try (PrintWriter rwReportPrintWriter = new PrintWriter(rwReportFile)) {
             rwReportPrintWriter.println(getRWHeader());
-            for (int i = 0; i < rwReportEntries.size(); i++) {
-               rwReportPrintWriter.println(convertToRWEntry(i, rwReportEntries.get(i)));
+            for (int i = 0; i < reportEntries.size(); i++) {
+               rwReportPrintWriter.println(convertToRWEntry(i, reportEntries.get(i)));
             }
          }
-
-         for (ReportEntry rwReportEntry: rwReportEntries) {
-            rwReportEntry.setStartExchangeRate(getExchangeRate(rwReportEntry.getStartDate()));
-            rwReportEntry.setEndExchangeRate(getExchangeRate(rwReportEntry.getEndDate()));
-            System.out.println(rwReportEntry);
-         }
-
       }
    }
 

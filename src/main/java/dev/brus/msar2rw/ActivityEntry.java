@@ -12,7 +12,8 @@ public class ActivityEntry {
    public static final String ACTIVITY_SALE = "Sale";
    public static final String ACTIVITY_CLOSING_VALUE = "Closing Value";
 
-   public String type;
+   String type;
+   String description;
    Date date;
    BigDecimal shares;
    BigDecimal price;
@@ -23,6 +24,15 @@ public class ActivityEntry {
 
    public ActivityEntry setType(String type) {
       this.type = type;
+      return this;
+   }
+
+   public String getDescription() {
+      return description;
+   }
+
+   public ActivityEntry setDescription(String description) {
+      this.description = description;
       return this;
    }
 
@@ -55,6 +65,6 @@ public class ActivityEntry {
 
    @Override
    public String toString() {
-      return String.format("%s %s %.3f %.2f", DateFormat.getDateInstance().format(date), type, shares, price);
+      return String.format("%s %s %.3f %.2f", DateFormat.getDateInstance().format(date), description, shares, price);
    }
 }
