@@ -155,9 +155,6 @@ public class App {
       //1 - Codice titolo possesso
       rwEntryFields.add("RW - 01");
 
-      //2 - Tipo contribuente
-      rwEntryFields.add("RW - 02");
-
       //3 - Codice individuaz. bene
       rwEntryFields.add("RW - 03");
 
@@ -185,11 +182,11 @@ public class App {
       //29 - IVAFE
       rwEntryFields.add("RW - 29");
 
-      rwEntryFields.add("Azioni");
+      rwEntryFields.add(" Shares");
 
-      rwEntryFields.add("Data inizio");
+      rwEntryFields.add("Start date");
 
-      rwEntryFields.add("Data fine");
+      rwEntryFields.add("  End date");
 
       return rwEntryFields.stream().collect(Collectors.joining("\t"));
    }
@@ -197,6 +194,9 @@ public class App {
    private static String convertToRWEntry(int index, ReportEntry entry) {
       List<String> rwEntryFields = new ArrayList<>();
       BigDecimal taxRate = new BigDecimal("0.002");
+      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+      NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.ITALY);
+      numberFormat.setMinimumFractionDigits(3);
 
 
       //0 - RW index
@@ -205,11 +205,8 @@ public class App {
       //1 - Codice titolo possesso
       rwEntryFields.add("1"); //1 - proprietà
 
-      //2 - Tipo contribuente
-      rwEntryFields.add("2"); //2 - titolare effettivo
-
       //3 - Codice individuaz. bene
-      rwEntryFields.add("2"); //2 - PARTECIPAZIONI AL CAPITALE O AL PATRIMONIO DI SOCIETÀ NON RESIDENTI
+      rwEntryFields.add("20"); //20 - CONTO DEPOSITO TITOLI ALL’ESTERO
 
       //4 - Codice Stato estero
       rwEntryFields.add("069"); //069 - STATI UNITI D’AMERICA
@@ -239,10 +236,8 @@ public class App {
       BigDecimal taxValue = endValue.multiply(taxRate).multiply(BigDecimal.valueOf(days)).divide(BigDecimal.valueOf(365), RoundingMode.CEILING).setScale(0, RoundingMode.HALF_UP);
       rwEntryFields.add(taxValue.toString());
 
-      rwEntryFields.add(entry.getShares().toString());
+      rwEntryFields.add(numberFormat.format(entry.getShares()));
       
-      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
       rwEntryFields.add(dateFormat.format(entry.getStartDate()));
 
       rwEntryFields.add(dateFormat.format(entry.getEndDate()));
