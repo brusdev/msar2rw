@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonArray;
@@ -226,7 +227,7 @@ public class App {
       rwEntryFields.add(endValue.toString());
 
       //10 - Giorni IVAFE- IC
-      int days = (int)Math.ceil((entry.getEndDate().getTime() - entry.getStartDate().getTime()) / 86400000d) + 1;
+      long days = TimeUnit.MILLISECONDS.toDays(entry.getEndDate().getTime() - entry.getStartDate().getTime()) + 1;
       rwEntryFields.add(String.valueOf(days));
 
       //14 - Codice
