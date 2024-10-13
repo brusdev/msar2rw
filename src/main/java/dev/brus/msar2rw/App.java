@@ -252,9 +252,9 @@ public class App {
       for (int i = activityEntries.size() - 1; i >= 0; i--) {
          ActivityEntry activityEntry = activityEntries.get(i);
 
-         // the shares to remove should be the ones bought before the sell (in the negativeActivityEntry)
+         // the shares to remove should be the ones bought before (or the same day) the sell (in the negativeActivityEntry)
          // by comparing the activity date with the sell date allows to skip the ones coming after the sell itself
-         if (activityEntry.getShares().compareTo(BigDecimal.ZERO) > 0 && activityEntry.getDate().compareTo(negativeActivityEntry.getDate()) < 0) {
+         if (activityEntry.getShares().compareTo(BigDecimal.ZERO) > 0 && activityEntry.getDate().compareTo(negativeActivityEntry.getDate()) <= 0) {
             if (activityEntry.getShares().compareTo(decrementingShares) >= 0) {
                decrementingReportEntries.add(new ReportEntry().setStartDate(activityEntry.getDate()).
                   setEndDate(negativeActivityEntry.getDate()).
