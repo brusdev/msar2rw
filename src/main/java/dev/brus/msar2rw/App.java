@@ -249,7 +249,9 @@ public class App {
       List<ReportEntry> decrementingReportEntries = new ArrayList<>();
       BigDecimal decrementingShares = negativeActivityEntry.getShares().abs();
 
-      for (ActivityEntry activityEntry: activityEntries) {
+      for (int i = activityEntries.size() - 1; i >= 0; i--) {
+         ActivityEntry activityEntry = activityEntries.get(i);
+
          if (activityEntry.getShares().compareTo(BigDecimal.ZERO) > 0) {
             if (activityEntry.getShares().compareTo(decrementingShares) >= 0) {
                decrementingReportEntries.add(new ReportEntry().setStartDate(activityEntry.getDate()).
